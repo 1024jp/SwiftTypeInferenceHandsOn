@@ -45,6 +45,13 @@ public struct TypeVariableBindings {
         }
         
         // <Q03 hint="understand data structure" />
+        let youngType = (type1.id < type2.id) ? type1 : type2
+        let typeVarRep = youngType.representative(bindings: self)
+        let typeVarNonRep = (type2 == youngType) ? type1 : type2
+        
+        for typeVar in typeVarNonRep.equivalentTypeVariables(bindings: self) {
+            setBinding(for: typeVar, .transfer(typeVarRep))
+        }
     }
     
     public mutating func assign(variable: TypeVariable,

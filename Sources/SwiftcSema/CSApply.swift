@@ -54,7 +54,12 @@ public final class ConstraintSolutionApplicator : ASTVisitor {
     public func visit(_ node: ClosureExpr) throws -> ASTNode {
         _ = try applyFixedType(expr: node)
         
-        // <Q14 hint="see visitCallExpr" />
+        // <Q14 hint="see visit(_ node: CallExpr)" />
+        if let closureTy = node.type as? FunctionType {
+            let paramTy = closureTy.parameter
+//            _ = node.body
+//            _ = node.returnType
+        }
         
         return node
     }
@@ -121,6 +126,9 @@ extension ConstraintSystem.Solution {
                 return expr
             case .valueToOptional:
                 // <Q12 hint="use `InjectIntoOptionalExpr` and `coerce`" />
+                let wrappedTy = (toTy as! OptionalType).wrapped
+                var expr = try coerce(expr: expr, to: wrappedTy)
+                expr = InjectIntoOptionalExpr(subExpr: expr, type: toTy)
                 return expr
             case .optionalToOptional:
                 return try coerceOptionalToOptional(expr: expr, to: toTy)
